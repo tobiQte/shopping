@@ -56,10 +56,47 @@ def load_data(filename):
         - VisitorType, an integer 0 (not returning) or 1 (returning)
         - Weekend, an integer 0 (if false) or 1 (if true)
 
+
     labels should be the corresponding list of labels, where each label
     is 1 if Revenue is true, and 0 otherwise.
     """
-    raise NotImplementedError
+    evidence = list()
+    label = list()
+    month = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "June": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12}
+    visitor_type = {"New_Visitor": 0, "Returning_Visitor": 1, "Other": 0}
+    weekend = {"TRUE": 1, "FALSE": 0}
+
+    #read values from CSV
+    with open(filename, "r") as file:
+        all = csv.DictReader(file)
+
+        #loop through lines
+        for line in all:
+            #put evidence into list
+            evidence_loop = (int(line["Administrative"]), float(line["Administrative_Duration"]),
+                             int(line["Informational"]), float(line["Informational_Duration"]),
+                             int(line["ProductRelated"]), float(line["ProductRelated_Duration"]),
+                             float(line["BounceRates"]), float(line["ExitRates"]), float(line["PageValues"]),
+                             float(line["SpecialDay"]),month[line["Month"]], int(line["OperatingSystems"]),
+                             int(line["Browser"]), int(line["Region"]), int(line["TrafficType"]),
+                            visitor_type[line["VisitorType"]], weekend[line["Weekend"]]
+                            )
+
+            #append row to evidence
+            evidence.append(evidence_loop)
+
+            #generate label 0 for false and 1 for true and append to list of labels
+            if line["Revenue"] == "FALSE":
+                label.append("0")
+            if line["Revenue"] == "TRUE":
+                label.append("1")
+            evidence.append(evidence_loop)
+
+        result = tuple()
+        result = (evidence, label)
+        print(result)
+        #return evidence and label
+        return result
 
 
 def train_model(evidence, labels):
