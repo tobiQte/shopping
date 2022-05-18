@@ -65,6 +65,7 @@ def load_data(filename):
     month = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "June": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12}
     visitor_type = {"New_Visitor": 0, "Returning_Visitor": 1, "Other": 0}
     weekend = {"TRUE": 1, "FALSE": 0}
+    revenue = {"TRUE": 1, "FALSE": 0}
 
     #read values from CSV
     with open(filename, "r") as file:
@@ -86,15 +87,12 @@ def load_data(filename):
             evidence.append(evidence_loop)
 
             #generate label 0 for false and 1 for true and append to list of labels
-            if line["Revenue"] == "FALSE":
-                label.append("0")
-            if line["Revenue"] == "TRUE":
-                label.append("1")
-            evidence.append(evidence_loop)
+            label.append(revenue[line["Revenue"]])
 
+        # pack into a tuple
         result = tuple()
         result = (evidence, label)
-        print(result)
+
         #return evidence and label
         return result
 
@@ -104,8 +102,9 @@ def train_model(evidence, labels):
     Given a list of evidence lists and a list of labels, return a
     fitted k-nearest neighbor model (k=1) trained on the data.
     """
-    raise NotImplementedError
-
+    # set k to 1 in nearest neighbor classifier and retur
+    neigh = KNeighborsClassifier(n_neighbors=1)
+    return neigh.fit(evidence, labels)
 
 def evaluate(labels, predictions):
     """
@@ -122,7 +121,31 @@ def evaluate(labels, predictions):
     representing the "true negative rate": the proportion of
     actual negative labels that were accurately identified.
     """
-    raise NotImplementedError
+    sum_positives = 0
+    sum_negatives = 0
+    specificity = float(0)
+    sensitivity = float(0)
+
+    #loop over list
+    for i in range(len(labels)):
+
+        if labels[i] == 1:
+            sum_positives += 1
+            if labels[i] == predictions[i]:
+                sensitivity += 1
+
+        elif labels[i] == 0:
+            sum_negatives += 1
+            if labels[i] == predictions[i]:
+                specificity += 1
+
+    # calculate sensitivity and specificity
+    sensitivity /= sum_positives
+    specificity /= sum_negatives
+
+    return (sensitivity, specificity)
+
+
 
 
 if __name__ == "__main__":
